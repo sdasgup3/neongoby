@@ -18,6 +18,8 @@
 #include "dyn-aa/DynamicAliasAnalysis.h"
 #include "dyn-aa/Utils.h"
 
+#include "PointerCollector.h"
+
 using namespace std;
 using namespace llvm;
 using namespace rcs;
@@ -32,6 +34,8 @@ struct AliasAnalysisChecker: public ModulePass {
   virtual bool runOnModule(Module &M);
 
  private:
+  PointerCollector Collector;
+
   static bool CompareOnFunction(const ValuePair &VP1, const ValuePair &VP2);
   static pair<Function *, Function *> GetContainingFunctionPair(
       const ValuePair &VP);
@@ -64,6 +68,7 @@ static RegisterPass<AliasAnalysisChecker> X(
     true); // Is Analysis?
 
 STATISTIC(NumDynamicAliases, "Number of dynamic aliases");
+STATISTIC(NumAllPairs, "Number of all pointer pairs");
 
 char AliasAnalysisChecker::ID = 0;
 
@@ -156,6 +161,13 @@ bool AliasAnalysisChecker::runOnModule(Module &M) {
     }
   }
   reportMissingAliases();
+
+  Collector.visit(M);
+  unsigned long long ptrs = Collector.getTotalNumberOfPointers();
+  NumAllPairs = ptrs*ptrs;
+  errs() << "Percentage checked total pairs (over all pairs) :";
+  errs() << NumDynamicAliases << "/" << NumAllPairs << " = ";
+  errs() << NumDynamicAliases*100/NumAllPairs << "%\n";
 
   return false;
 }
