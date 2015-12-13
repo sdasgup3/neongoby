@@ -42,6 +42,8 @@ struct DynamicAliasAnalysis: public ModulePass,
   void processEnter(const EnterRecord &Record);
   void processReturn(const ReturnRecord &Record);
   void initialize();
+  void afterRecord(const LogRecord&Record) override;
+  void dumpHeartBeat();
 
   const DenseSet<rcs::ValuePair> &getAllAliases() const { return Aliases; }
 
@@ -88,6 +90,7 @@ struct DynamicAliasAnalysis: public ModulePass,
   DenseMap<unsigned, std::vector<unsigned> > ActivePointers;
   // Outdated contexts of a function.
   DenseMap<unsigned, DenseSet<unsigned> > OutdatedContexts;
+
 };
 }
 

@@ -71,6 +71,38 @@ bool DynamicAliasAnalysis::runOnModule(Module &M) {
   return false;
 }
 
+void 
+DynamicAliasAnalysis::dumpHeartBeat(void) {
+  static unsigned long long hb_freq = 0;
+  hb_freq ++;
+
+  if(0 == hb_freq % 1000000) {
+    unsigned long long AddressVersionSize = AddressVersion.size();
+    unsigned long long PointsToSize = PointsTo.size();
+    unsigned long long PointedBySize = PointedBy.size();
+    unsigned long long AliasesSize = Aliases.size();
+    unsigned long long AddressesVersionUnknownSize = AddressesVersionUnknown.size();
+    unsigned long long ActivePointersSize = ActivePointers.size();
+    unsigned long long OutdatedContextsSize = OutdatedContexts.size();
+
+    errs() << "\n\nSize Statistics \n";
+    errs() << "AddressVersionSize " << AddressVersionSize << "\n";
+    errs() << "PointsToSize " << PointsToSize << "\n";
+    errs() << "PointedBySize " << PointedBySize << "\n";
+    errs() << "AliasesSize " << AliasesSize << "\n";
+    errs() << "AddressesVersionUnknownSize " << AddressesVersionUnknownSize << "\n";
+    errs() << "ActivePointersSize " << ActivePointersSize << "\n";
+    errs() << "OutdatedContextsSize " << OutdatedContextsSize << "\n";
+    errs() << "MaxNumPointersToSameLocation " << MaxNumPointersToSameLocation << "\n";
+  }
+}
+
+void 
+DynamicAliasAnalysis::afterRecord(const LogRecord& Record)  {
+  dumpHeartBeat();
+}
+
+
 void DynamicAliasAnalysis::getAnalysisUsage(AnalysisUsage &AU) const {
   // TODO: Do we need this? since DynamicAliasAnalysis is not in the AA chain
   AliasAnalysis::getAnalysisUsage(AU);
