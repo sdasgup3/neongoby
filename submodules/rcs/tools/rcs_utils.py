@@ -7,10 +7,13 @@ def get_cmd_result(cmd):
     return os.popen(cmd).read().strip()
 
 def get_bindir():
-    return get_cmd_result('llvm-config --bindir')
+    #return get_cmd_result('llvm-config --bindir')
+    return get_cmd_result('echo $HOME/Documents/klee-zesti/neongoby.inst/bin/')
 
 def get_libdir():
-    return get_cmd_result('llvm-config --libdir')
+    #return get_cmd_result('llvm-config --libdir')
+    return get_cmd_result('echo $HOME/Documents/klee-zesti/neongoby.inst/lib/')
+
 
 def load_plugin(cmd, plugin):
     return string.join((cmd, '-load', get_libdir() + '/' + plugin + '.so'))
