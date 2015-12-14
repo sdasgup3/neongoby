@@ -76,7 +76,7 @@ DynamicAliasAnalysis::dumpHeartBeat(void) {
   static unsigned long long hb_freq = 0;
   hb_freq ++;
 
-  if(0 == hb_freq % 1000000) {
+  if(0 == hb_freq % 5000000) {
     unsigned long long AddressVersionSize = AddressVersion.size();
     unsigned long long PointsToSize = PointsTo.size();
     unsigned long long PointedBySize = PointedBy.size();
@@ -199,6 +199,10 @@ void DynamicAliasAnalysis::removePointedBy(Definition Ptr, Location Loc) {
   auto J = PointedBy.find(Loc);
   assert(J != PointedBy.end());
   J->second.erase(Ptr);
+  /*Do not keep those Location entry which does not map to any Defintion set*/
+  if(0 == J->second.size()) {
+    PointedBy.erase(J);
+  }
 }
 
 void DynamicAliasAnalysis::removePointsTo(Definition Ptr) {
